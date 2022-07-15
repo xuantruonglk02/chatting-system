@@ -1,0 +1,107 @@
+/* img background */
+.JSX_main {
+    height: 100vh;
+    background: url('../../assests/image/img.png') repeat;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+.JSX_main .heard_title {
+    display: flex;
+
+}
+/* tai tồ */
+.JSX_main .heard_title .logo_title,.JSX_main .heard_title .creative_register {
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+/* chữ lô gô chatting */
+.JSX_main .heard_title .logo_title .logo_active {
+    width: 60%;
+    color: rgba(4, 0, 245, 0.992);
+    font-size: 80px;
+    margin-top: 10px;
+    margin-left: 30px;
+    background: linear-gradient(90deg, #ff0000, #00ff1e, #ff00f3, #0033ff, #ff00c4, #ff0000);
+    background-size: 400%;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    animation: animate 10s linear infinite;
+}
+
+/* 2 ô sau chatting */
+.JSX_main .heard_title .logo_title .infomation_help {
+    display: flex;
+    color: rgb(242, 242, 245);
+    font-size: 14px;
+    
+}
+.JSX_main .heard_title .logo_title .infomation_help .infomation, 
+.JSX_main .heard_title .logo_title .infomation_help .help {
+    padding: 10px;
+    
+}
+.JSX_main .heard_title .logo_title .infomation_help .infomation:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+.JSX_main .heard_title .logo_title .infomation_help .help:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+/* nút tạo tài khoản */
+.JSX_main .heard_title .creative_register {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 40px;
+
+    
+}
+/* nút tạo tài khoản */
+.JSX_main .heard_title .creative_register .register {
+    padding: 10px 15px;
+    background-color: rgba(232, 1, 1, 0.999);
+    border-radius: 5px;
+    color: white;
+}
+.JSX_main .heard_title .creative_register .register:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+/* div sờ lô gần và nút đăng nhập */
+.JSX_main .slogan_login {
+    margin-top: 200px;
+    text-align: center;
+}
+
+/* tiêu đề kết nối yêu thương */
+.JSX_main .slogan_login .slogan {
+    font-size: 36px;
+    color: #fff;
+}
+
+/* nút đăng nhập */
+.JSX_main .slogan_login .login {
+    width: 120px;
+    margin: 20px auto;
+    padding: 10px 10px;
+    background: red;
+    border-radius: 5px;
+    color: white;
+}
+.JSX_main .slogan_login .login:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+/* animation logo chatting */
+@keyframes animate {
+    0% {
+        background-position: 0%;
+    }
+    100% {
+        background-position: 400%;
+    }
+}
