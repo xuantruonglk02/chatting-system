@@ -4,23 +4,25 @@
     .task-bar {
         border-right: 2px solid black;
         position: relative;
+        width: 5% !important;
         svg {
-            font-size: 60px;
+            font-size: 40px;
             &.home {
                 position: absolute;
                 top: 10px;
-                left: 35px;
+                left: 15px;
             }
             &.setting {
                 position: absolute;
                 bottom: 10px;
-                left: 35px;
+                left: 15px;
             }
         }
     }
     .user-list {
         border-right: 2px solid red;
         height: 100vh;
+        width: 25% !important;
         .chat-title {
             opacity: 0.6;
             padding: 20px 5px 10px 5px;
@@ -80,6 +82,7 @@
         }
     }
     .chat {
+        width: 70% !important;
         padding: 20px;
         height: 100vh;
        .chat-top {
@@ -128,9 +131,33 @@
             p {
                 background-color:blueviolet;
             }
+            .avatar {
+                float: left; 
+                height: 45px;
+                width: 45px;
+                background-color: white;
+                padding: 5px;
+                border-radius: 50%;
+                font-size: 25px;
+                text-align: center;
+                font-weight: bold;
+                margin: 0 10px;
+            }
         }
         .me {
             text-align: right;
+            .avatar {
+                float: right; 
+                height: 45px;
+                width: 45px;
+                background-color: white;
+                padding: 5px;
+                border-radius: 50%;
+                font-size: 25px;
+                text-align: center;
+                font-weight: bold;
+                margin: 0 10px;
+            }
             p {
                 text-align: left;
                 background-color: #328AFC;

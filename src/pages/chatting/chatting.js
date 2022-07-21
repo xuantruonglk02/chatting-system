@@ -69,10 +69,12 @@ const Chatting = () => {
           <div className="chat-middle">
             {arr.map( (item, index) => 
                <>
-                <div className="other">
+                <div className="user-chat other">
+                <div className="avatar">LV</div>
                 <p className="other">autoprefixer: Replace color-adjust to print-color-adjust. The color-adjust shorthand is currentl</p>
              </div>
-             <div className="me">
+             <div className="user-chat me">
+              <div className="avatar">LV</div>
                <p >c dịch từ tiếng Anh-
 Trong xuất bản và thiết kế đồ họa, Lorem ipsum là văn bản giữ chỗ thường được sử dụng để thể hiện hình thức trực quan của tài liệu hoặc kiểu chữ mà không dựa trên nội dung có ý nghĩa. Lorem ipsum có thể được sử dụng làm trình giữ chỗ trước</p>
              </div>

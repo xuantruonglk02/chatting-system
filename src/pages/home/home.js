@@ -1,12 +1,17 @@
 import './JSX_main.css';
-
+import {useNavigate} from 'react-router-dom'
 
 
 function Home() {
+  let navigate = useNavigate()
 
+  const handleRedirectSignup = () => {
+    navigate('signup-email')
+  }
+  const handleRedirectLogin = ()=> {
+    navigate('/login')
+  }
   const JSX_main = (
-
-
     
     <section className="JSX_main">
 
@@ -30,7 +35,9 @@ function Home() {
         {/* ô này bên góc phải màn hình */}
         <div className="creative_register">
         
-          <div className="register">tạo tài khoản</div>
+          <div className="register"
+          onClick={handleRedirectSignup}
+          >tạo tài khoản</div>
 
         </div>
       </div>
@@ -38,7 +45,9 @@ function Home() {
       {/* ô này ở giữa trang sau đoạn lô gô */}
       <div className="slogan_login">
         <div className="slogan"> Kết nối để yêu thương</div>
-        <div className="login">đăng nhập</div>
+        <div className="login" 
+        onClick={handleRedirectLogin}
+        >đăng nhập</div>
       </div>
 
     

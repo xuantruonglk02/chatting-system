@@ -1,0 +1,42 @@
+
+.bg-image {
+    background: url('../../assests/image/img.png') repeat;
+    background-position: center;
+    background-size: cover;
+   height: 100vh;
+    .card-login {
+        -ms-overflow-style: none; /* for Internet Explorer, Edge */
+        scrollbar-width: none; /* for Firefox */
+        overflow-y: scroll; 
+        width: 600px;
+        border-radius: 30px !important;
+        .form-login {
+            margin-top: 60px;
+            .form-outline {
+                width: 80%;
+                margin: 0 auto;
+            }
+            .login-options {
+                margin-top: 70px;
+                p {
+                    margin: 5px;
+                    padding: 0;
+                    a {
+                        text-decoration: none;
+                    }
+                }
+            }
+            p {
+                color: red;
+            }
+            button {
+                padding: 10px 40px;
+                color: white !important;
+            }
+        }
+    }
+    
+}
+.card-login::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+}
