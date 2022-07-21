@@ -8,9 +8,20 @@ import "swiper/css/bundle";
 import {BsFillCameraVideoFill, BsMic} from 'react-icons/bs'
 import {FiPhoneCall, FiSend} from 'react-icons/fi'
 import {AiOutlineExclamationCircle, AiFillCamera, AiOutlineHome, AiOutlineSetting} from 'react-icons/ai'
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const Chatting = () => {
   let arr = [1, 2, 3, 4, 5, 6, 7, 8];
+  const navigate = useNavigate()
+  const token = useSelector(state => state.reducer.user.user?.accessToken)
+
+  useEffect( () => {
+    if(!token) {
+      navigate('/')
+    }
+  }, [])
   return (
     <div className="container-fluid chatting">
       <div className="row">

@@ -17,6 +17,7 @@ const ResetPw = () => {
   const [messCheckToken, setMessCheckToken] = useState('')
   const [successCheckToken, setSuccessCheckToken] = useState(0)
   const [successResetPw, setSuccessResetPw] = useState(0)
+  const [display, setDiplay] = useState('none')
 
   let onPasswordChange = (e) => {
     setPassword(e.target.value);
@@ -24,14 +25,26 @@ const ResetPw = () => {
   let onRepasswordChange = (e) => {
     setRepassword(e.target.value)
   }
+  const enterKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+        handleResetPw(e)
+    }
+  };
   let handleResetPw = async () => {
+   setMess('')
+   if(!password || !repassword) setMess("Các mục trên không được để trống")
+   else {
     let user = {
       password, 
       repassword, 
       email, 
       token
     }
-    ResetPwApi(setMess, user, setSuccessResetPw)
+    setDiplay('block')
+    await ResetPwApi(setMess, user, setSuccessResetPw)
+    setDiplay('none')
+   }
   };
 
   useEffect( () => {
@@ -62,6 +75,7 @@ const ResetPw = () => {
                        id="pwd"
                        value={password}
                        onChange={(e) => onPasswordChange(e)}
+                       onKeyDown={(e) => enterKeyDown(e)}
                       />
                     </div>
 
@@ -73,10 +87,12 @@ const ResetPw = () => {
                        id="pwd"
                        value={repassword}
                        onChange={(e) => onRepasswordChange(e)}
+                       onKeyDown={(e) => enterKeyDown(e)}
                       />
                     </div>
                       <p className="text-danger text-center mt-1 mb-0"> {mess}</p>
-                    <div className="d-flex justify-content-center">
+                    <div className="d-flex justify-content-center button-submit">
+                    <div className="loader" style={{display: `${display}`}}></div>
                       <button
                         type="button"
                         className="btn btn-primary btn-block btn-lg gradient-custom-4 text-body mt-5 mb-2"

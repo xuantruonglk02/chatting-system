@@ -32,6 +32,10 @@
             button {
                 padding: 10px 40px;
                 color: white !important;
+                &:focus {
+                    outline: none;
+                    box-shadow: none;
+                }
             }
         }
     }
@@ -40,3 +44,22 @@
 .card-login::-webkit-scrollbar {
     display: none; /* for Chrome, Safari, and Opera */
 }
+
+.button-submit {
+    position: relative;
+    .loader {
+        // display: block;
+        position: absolute;
+        border: 5px solid #80808054;
+        border-radius: 50%;
+        border-top: 5px solid #555;
+        width: 30px;
+        height: 30px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+      }
+}
+@keyframes spin {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+  }

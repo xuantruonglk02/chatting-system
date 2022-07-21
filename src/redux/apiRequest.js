@@ -10,7 +10,7 @@ const Axios = axios.create({
 
 export const SignupEmailApi = async (email, setMess) => {
   try {
-    await Axios.post("/auth/register-email", email);
+    await Axios.post("/auth/register-email", {email});
     return 1;
   } catch (err) {
     console.log(err);
@@ -24,27 +24,25 @@ export const VerifySignedEmail = async (
   token,
   dispatch,
   setMess,
-  setSuccess
+  setSuccessCheckToken
 ) => {
   try {
     let res = await Axios.get(`/auth/create-account?token=${token}`);
     let action = res.data;
     action.token = token;
     dispatch(userVeryfiMail(action));
-    setMess("Chúc mừng bạn đã xác thực email thành công!");
-    setSuccess(1);
+    setSuccessCheckToken(1);
   } catch (err) {
     console.log(err);
     if (err.response?.data) setMess(err.response?.data?.errorMessage);
     else setMess(err.message)
-    setSuccess(0);
+    setSuccessCheckToken(0);
   }
 };
 
 export const SignupApi = async (user, setMess, navigate) => {
   try {
     let res = await Axios.post('/auth/create-account', user)
-   
     navigate('/login')
   } catch (err) {
     console.log(err);
@@ -65,14 +63,15 @@ export const LoginApi = async (user, setMess, navigate, dispatch) => {
       }
 };
 
-export const ForgotPwApi = async (email,token, setMess, navigate, dispatch) => {
+export const ForgotPwApi = async (email, setMess, setSuccess) => {
     try {
-        await Axios.post('/auth/forget-password/verify-email', email)
-        navigate('/reset-password')
+        await Axios.post('/auth/forget-password/verify-email', {email})
+        setSuccess(1)
       } catch (err) {
         console.log(err);
         if(err.response?.data?.errorCode) setMess(err.response.data.errorCode)
         else setMess(err.message)
+        setSuccess(0)
       }
 };
 
