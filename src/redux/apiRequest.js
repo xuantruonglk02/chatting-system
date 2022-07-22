@@ -14,7 +14,7 @@ export const SignupEmailApi = async (email, setMess) => {
     return 1;
   } catch (err) {
     console.log(err);
-    if (err.response?.data?.errorCode) setMess(err.response?.data?.errorCode);
+    if (err.response?.data?.errorMessage) setMess(err.response?.data?.errorMessage);
     else setMess(err.message)
     return 0;
   }
@@ -46,7 +46,7 @@ export const SignupApi = async (user, setMess, navigate) => {
     navigate('/login')
   } catch (err) {
     console.log(err);
-    if(err.response?.data?.errorCode) setMess(err.response.data.errorCode)
+    if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
     else setMess(err.message)
   }
 };
@@ -58,7 +58,7 @@ export const LoginApi = async (user, setMess, navigate, dispatch) => {
         navigate('/chat')
       } catch (err) {
         console.log(err);
-        if(err.response?.data?.errorCode) setMess(err.response.data.errorCode)
+        if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
         else setMess(err.message)
       }
 };
@@ -69,7 +69,7 @@ export const ForgotPwApi = async (email, setMess, setSuccess) => {
         setSuccess(1)
       } catch (err) {
         console.log(err);
-        if(err.response?.data?.errorCode) setMess(err.response.data.errorCode)
+        if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
         else setMess(err.message)
         setSuccess(0)
       }
@@ -82,7 +82,7 @@ export const ResetPwCheckTokenApi = async (setMess, token, setSuccessCheckToken,
     setSuccessCheckToken(1)
   } catch(err) {
     console.log(err);
-    if(err.response?.data?.errorCode) setMess(err.response.data.errorCode)
+    if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
     else setMess(err.message)
     setSuccessCheckToken(0)
   }
@@ -94,7 +94,7 @@ export const ResetPwApi = async (setMess, user, setSuccessResetPw) => {
      setSuccessResetPw(1)
   } catch(err) {
     console.log(err);
-    if(err.response?.data?.errorCode) setMess(err.response.data.errorCode)
+    if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
     else setMess(err.message)
     setSuccessResetPw(0)
   }
