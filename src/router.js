@@ -15,8 +15,8 @@ const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={ <Home/>} />
-                <Route path="/chat" element={!token? <Navigate to='/' /> : <Chatting/>} />
+                <Route path="/" element={token? <Navigate to='/chat' /> : <Home/>} />
+                <Route path="/chat" element={!token? <Navigate to='/login' /> : <Chatting/>} />
                 <Route path="/auth/create-account/:token" element={ <Signup />} />
                 <Route path="/login" element={ <Login />} />
                 <Route path="/signup-email" element={ <SignupEmail />} />
