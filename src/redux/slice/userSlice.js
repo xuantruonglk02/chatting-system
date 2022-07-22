@@ -13,14 +13,18 @@ const userSlice = createSlice({
 
     },
     userVeryfiMail: (state, action) => {
-        let user = state.user
-        user.email = action.payload.email
-        user.token = action.payload.token
+         let user = {
+          ...state.user,
+          email: action.payload.email,
+          token: action.payload.token
+        }
         state.user = user
     },
     userForgotPw: (state, action) => {
-        let user = state.user
-        user.email = action.payload.email
+        let user = {
+          ...state.user,
+          email: action.payload.email
+        }
         state.user = user
     }
   },

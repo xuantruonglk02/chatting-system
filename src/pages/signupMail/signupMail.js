@@ -1,8 +1,5 @@
 
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
 import { SignupEmailApi} from "../../redux/apiRequest";
 
 const SignupEmail = () => {

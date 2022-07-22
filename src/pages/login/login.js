@@ -91,7 +91,7 @@ const Login = () => {
                         <Link to="/forgot-password">Quên mật khẩu?</Link>
                       </p>
                       <p className="text-center text-muted">
-                        Chưa có tài khoản? <Link to="/signup">Đăng ký</Link>
+                        Chưa có tài khoản? <Link to="/signup-email">Đăng ký</Link>
                       </p>
                     </div>
                   </form>
