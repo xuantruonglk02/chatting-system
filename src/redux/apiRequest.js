@@ -99,3 +99,54 @@ export const ResetPwApi = async (setMess, user, setSuccessResetPw) => {
     setSuccessResetPw(0)
   }
 }
+
+export const SendMesApi = async (accessToken, data) => {
+  try {
+      Axios.post('/message/send', data, {
+        headers: {
+          'x-access-token': accessToken
+        }
+      })
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+export const GetRecentMes = async (accessToken,data, setMessagees, setIsLoadFullDataInMess) => {
+  try {
+    let res = await Axios.get(`/message/get?conversationId=${data.conversationId}&begin=${data.begin}&limit=${data.limit}`, {
+      headers: {
+        'x-access-token': accessToken
+      }
+    })
+    if(!res.data.messages) {
+      setIsLoadFullDataInMess(true)
+      return
+    }
+    setMessagees(prev => [...prev, ...res.data.messages])
+    
+  } catch(err) {
+    console.log(err)
+    alert(err.respone)
+    setIsLoadFullDataInMess(true)
+  }
+}
+
+export const GetRecentConversations = async (accessToken,begin, limit, setConversations, setIsLoadFullDataInCon) => {
+  try {
+    let res = await Axios.get(`/conversation/get-recent?begin=${begin}&limit=${limit}`, {
+      headers: {
+        'x-access-token': accessToken
+      }
+    })
+    if(!res.data.conversations) {
+      setIsLoadFullDataInCon(true);
+      return
+    }
+    setConversations(prev => [...prev, ...res.data.conversations])
+  } catch(err) {
+    console.log(err)
+    alert(err.respone)
+    setIsLoadFullDataInCon(true)
+  }
+}

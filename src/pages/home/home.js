@@ -1,5 +1,6 @@
 import './JSX_main.css';
 import {useNavigate} from 'react-router-dom'
+import { useState } from 'react';
 
 
 function Home() {
@@ -11,6 +12,7 @@ function Home() {
   const handleRedirectLogin = ()=> {
     navigate('/login')
   }
+ 
   const JSX_main = (
     
     <section className="JSX_main">

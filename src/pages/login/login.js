@@ -1,11 +1,13 @@
 import "./login.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { LoginApi } from "../../redux/apiRequest";
 
 const Login = () => {
+  
+  console.log('top login')
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const auth = useSelector((state) => state.auth);
@@ -39,6 +41,9 @@ const Login = () => {
       setDisplay('none')
     }
   };
+  useEffect( () => { 
+    console.log('bootom then')
+  })
   return (
     <section className="bg-image">
       <div className="mask d-flex align-items-center gradient-custom-3">
