@@ -29,7 +29,7 @@ const Chatting = () => {
   const [arr, setArr] = useState([
     1, 2, 3, 4, 5, 6, 7, 8, 10, 39, 11, 22, 3, 5, 6,
   ]);
-
+  const isScrolled = useRef(false);
   // set to fetch more data when scroll
   const converRef = useRef();
   const messRef = useRef();
@@ -50,8 +50,8 @@ const Chatting = () => {
   // set variables to get conversations or messages
   const [beginNumGetConver, setBeginNumGetConver] = useState(0);
   const [beginNumGetMess, setBeginNumGetMess] = useState(0);
-  const [isLoadFullDataInMess, setIsLoadFullDataInMess] = useState(false)
-  const [isLoadFullDataInCon, setIsLoadFullDataInCon] = useState(false)
+  const [isLoadFullDataInMess, setIsLoadFullDataInMess] = useState(false);
+  const [isLoadFullDataInCon, setIsLoadFullDataInCon] = useState(false);
   const LIMIT_CONVER = 15;
   const LIMIT_MESS = 15;
   const [newMessage, setNewMessage] = useState("");
@@ -83,57 +83,84 @@ const Chatting = () => {
     setKeySeach(e.target.value);
   };
   const handleShowChat = (item, other) => {
+    console.log("redirect to show chat");
     setConversationIsPicked({
       ...item,
       nameOfChat: item.title || other.name,
     });
     let data = {
       conversationId: item._id,
-      begin: beginNumGetMess,
+      begin: 0,
       limit: LIMIT_MESS,
     };
     GetRecentMes(token, data, setMessagees);
+    setBeginNumGetMess(0);
+    setIsLoadFullDataInMess(false);
   };
   const scrollConvers = () => {
-      const { scrollTop, scrollHeight, clientHeight } = converRef.current;
-      if (scrollTop + clientHeight > 0.75 * scrollHeight && isLoadFullDataInCon) {
-        GetRecentConversations(
-          token,
-          beginNumGetConver + LIMIT_CONVER,
-          LIMIT_CONVER,
-          setConversations,
-          setIsLoadFullDataInCon
-        );
-        setBeginNumGetConver(prev => prev + LIMIT_CONVER)
-      }
+    const { scrollTop, scrollHeight, clientHeight } = converRef.current;
+    if (
+      scrollTop + clientHeight > 0.75 * scrollHeight &&
+      !isLoadFullDataInCon
+    ) {
+      let check = GetRecentConversations(
+        token,
+        beginNumGetConver + LIMIT_CONVER,
+        LIMIT_CONVER,
+        setConversations,
+        setIsLoadFullDataInCon
+      );
+      if (!check) setIsLoadFullDataInCon(true);
+      setBeginNumGetConver((prev) => prev + LIMIT_CONVER);
+    }
   };
   const updateConversList = () => {
-    let _conver = conversations
+    let _conver = conversations;
     if (_conver[0]._id === conversationIsPicked._id) {
-      _conver[0].lastMessage.content = getNewMessage.content
-      setConversations([..._conver])
-      return
+      _conver[0].lastMessage.content = getNewMessage.content;
+      setConversations([..._conver]);
+      return;
     }
-    for(let i = 0; i < _conver.length; i++) {
-      if(_conver[i]._id === conversationIsPicked._id) {
-        let temp = _conver[i]
-        temp.lastMessage.content = getNewMessage.content
-        _conver.splice(i, 1)
-        _conver.unshift(temp)
-        return
+    for (let i = 0; i < _conver.length; i++) {
+      if (_conver[i]._id === conversationIsPicked._id) {
+        let temp = _conver[i];
+        temp.lastMessage.content = getNewMessage.content;
+        _conver.splice(i, 1);
+        _conver.unshift(temp);
+        return;
       }
     }
   };
-  const scrollMess = () => {
+  const scrollMess = async () => {
     const { scrollTop, scrollHeight, clientHeight } = messRef.current;
-    if (scrollTop * -1 + clientHeight > 0.75 * scrollHeight && !isLoadFullDataInMess) {
-      let data = {
-        conversationId: conversationIsPicked._id,
-        begin: beginNumGetMess + LIMIT_MESS,
-        limit: LIMIT_MESS,
-      };
-      GetRecentMes(token, data, setMessagees, setIsLoadFullDataInMess)
-      setBeginNumGetMess(prev => prev + LIMIT_MESS)
+    if (
+      scrollTop * -1 + clientHeight > 0.75 * scrollHeight &&
+      !isLoadFullDataInMess
+    ) {
+      if (!isScrolled.current) {
+        console.log("you are calling me");
+        console.log(beginNumGetConver);
+        isScrolled.current = true;
+        setTimeout(async () => {
+          console.log("you are calling me");
+          let data = {
+            conversationId: conversationIsPicked._id,
+            begin: beginNumGetMess + LIMIT_MESS,
+            limit: LIMIT_MESS,
+          };
+          let check = await GetRecentMes(
+            token,
+            data,
+            setMessagees,
+            setIsLoadFullDataInMess
+          );
+          if (check === false) {
+            setIsLoadFullDataInMess(true);
+          }
+          setBeginNumGetMess((prev) => prev + LIMIT_MESS);
+          isScrolled.current = false;
+        }, 600);
+      }
     }
   };
 
@@ -143,12 +170,15 @@ const Chatting = () => {
   const handlePickAvatar = (index) => {
     setAvatarIsPicked(index);
   };
-  socket.on("server:message", (data) => {
-    if(data) {
-    let _data = { ...data, from: { _id: data.from } };
-    setGetNewMessage(_data);
-    setNewMessage("");
-    }
+
+  useEffect(() => {
+    socket.on("server:message", (data) => {
+      if (data) {
+        let _data = { ...data, from: { _id: data.from } };
+        setGetNewMessage(_data);
+        setNewMessage("");
+      }
+    });
   });
   useEffect(() => {
     socket.on("connect", () => {
@@ -167,7 +197,7 @@ const Chatting = () => {
     if (getNewMessage) {
       setMessagees([getNewMessage, ...messagees]);
       setGetNewMessage("");
-      updateConversList()
+      updateConversList();
     }
   }, [getNewMessage]);
   return (

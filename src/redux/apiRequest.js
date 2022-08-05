@@ -119,16 +119,16 @@ export const GetRecentMes = async (accessToken,data, setMessagees, setIsLoadFull
         'x-access-token': accessToken
       }
     })
-    if(!res.data.messages) {
-      setIsLoadFullDataInMess(true)
-      return
+    if(res.data.messages.length === 0) {
+      return false
     }
-    setMessagees(prev => [...prev, ...res.data.messages])
+    if(data.begin === 0)  setMessagees([...res.data.messages])
+    else setMessagees(prev => [...prev, ...res.data.messages])
     
   } catch(err) {
     console.log(err)
     alert(err.respone)
-    setIsLoadFullDataInMess(true)
+    // setIsLoadFullDataInMess(true)
   }
 }
 
@@ -139,9 +139,8 @@ export const GetRecentConversations = async (accessToken,begin, limit, setConver
         'x-access-token': accessToken
       }
     })
-    if(!res.data.conversations) {
-      setIsLoadFullDataInCon(true);
-      return
+    if(res.data.conversations.length === 0) {
+      return false
     }
     setConversations(prev => [...prev, ...res.data.conversations])
   } catch(err) {
