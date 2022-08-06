@@ -10,12 +10,13 @@ const Axios = axios.create({
 
 export const SignupEmailApi = async (email, setMess) => {
   try {
-    await Axios.post("/auth/register-email", {email});
+    await Axios.post("/auth/register-email", { email });
     return 1;
   } catch (err) {
     console.log(err);
-    if (err.response?.data?.errorMessage) setMess(err.response?.data?.errorMessage);
-    else setMess(err.message)
+    if (err.response?.data?.errorMessage)
+      setMess(err.response?.data?.errorMessage);
+    else setMess(err.message);
     return 0;
   }
 };
@@ -35,117 +36,188 @@ export const VerifySignedEmail = async (
   } catch (err) {
     console.log(err);
     if (err.response?.data) setMess(err.response?.data?.errorMessage);
-    else setMess(err.message)
+    else setMess(err.message);
     setSuccessCheckToken(0);
   }
 };
 
 export const SignupApi = async (user, setMess, navigate) => {
   try {
-    let res = await Axios.post('/auth/create-account', user)
-    navigate('/login')
+    let res = await Axios.post("/auth/create-account", user);
+    navigate("/login");
   } catch (err) {
     console.log(err);
-    if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
-    else setMess(err.message)
+    if (err.response?.data?.errorMessage)
+      setMess(err.response.data.errorMessage);
+    else setMess(err.message);
   }
 };
 
 export const LoginApi = async (user, setMess, navigate, dispatch) => {
-    try {
-        let res = await Axios.post('/auth/login', user)
-        dispatch(userLogin(res.data))
-        navigate('/chat')
-      } catch (err) {
-        console.log(err);
-        if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
-        else setMess(err.message)
-      }
+  try {
+    let res = await Axios.post("/auth/login", user);
+    dispatch(userLogin(res.data));
+    navigate("/chat");
+  } catch (err) {
+    console.log(err);
+    if (err.response?.data?.errorMessage)
+      setMess(err.response.data.errorMessage);
+    else setMess(err.message);
+  }
 };
 
 export const ForgotPwApi = async (email, setMess, setSuccess) => {
-    try {
-        await Axios.post('/auth/forget-password/verify-email', {email})
-        setSuccess(1)
-      } catch (err) {
-        console.log(err);
-        if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
-        else setMess(err.message)
-        setSuccess(0)
-      }
+  try {
+    await Axios.post("/auth/forget-password/verify-email", { email });
+    setSuccess(1);
+  } catch (err) {
+    console.log(err);
+    if (err.response?.data?.errorMessage)
+      setMess(err.response.data.errorMessage);
+    else setMess(err.message);
+    setSuccess(0);
+  }
 };
 
-export const ResetPwCheckTokenApi = async (setMess, token, setSuccessCheckToken,  dispatch) => {
+export const ResetPwCheckTokenApi = async (
+  setMess,
+  token,
+  setSuccessCheckToken,
+  dispatch
+) => {
   try {
-    let res = await Axios.get(`/auth/reset-password?token=${token}`)
-    dispatch(userForgotPw(res.data))
-    setSuccessCheckToken(1)
-  } catch(err) {
+    let res = await Axios.get(`/auth/reset-password?token=${token}`);
+    dispatch(userForgotPw(res.data));
+    setSuccessCheckToken(1);
+  } catch (err) {
     console.log(err);
-    if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
-    else setMess(err.message)
-    setSuccessCheckToken(0)
+    if (err.response?.data?.errorMessage)
+      setMess(err.response.data.errorMessage);
+    else setMess(err.message);
+    setSuccessCheckToken(0);
   }
-}
+};
 
 export const ResetPwApi = async (setMess, user, setSuccessResetPw) => {
   try {
-     await Axios.post(`/auth/reset-password`, user)
-     setSuccessResetPw(1)
-  } catch(err) {
+    await Axios.post(`/auth/reset-password`, user);
+    setSuccessResetPw(1);
+  } catch (err) {
     console.log(err);
-    if(err.response?.data?.errorMessage) setMess(err.response.data.errorMessage)
-    else setMess(err.message)
-    setSuccessResetPw(0)
+    if (err.response?.data?.errorMessage)
+      setMess(err.response.data.errorMessage);
+    else setMess(err.message);
+    setSuccessResetPw(0);
   }
-}
+};
 
 export const SendMesApi = async (accessToken, data) => {
   try {
-      Axios.post('/message/send', data, {
-        headers: {
-          'x-access-token': accessToken
-        }
-      })
-  } catch(err) {
-    console.log(err)
-  }
-}
-
-export const GetRecentMes = async (accessToken,data, setMessagees, setIsLoadFullDataInMess) => {
-  try {
-    let res = await Axios.get(`/message/get?conversationId=${data.conversationId}&begin=${data.begin}&limit=${data.limit}`, {
+    Axios.post("/message/send", data, {
       headers: {
-        'x-access-token': accessToken
+        "x-access-token": accessToken,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const GetRecentMes = async (
+  accessToken,
+  data,
+  setMessagees,
+  setIsLoadFullDataInMess
+) => {
+  try {
+    let res = await Axios.get(
+      `/message/get?conversationId=${data.conversationId}&begin=${data.begin}&limit=${data.limit}`,
+      {
+        headers: {
+          "x-access-token": accessToken,
+        },
       }
-    })
-    if(res.data.messages.length === 0) {
-      return false
+    );
+    if (res.data.messages.length === 0 && data.begin != 0) {
+      return false;
     }
-    if(data.begin === 0)  setMessagees([...res.data.messages])
-    else setMessagees(prev => [...prev, ...res.data.messages])
-    
-  } catch(err) {
-    console.log(err)
-    alert(err.respone)
+    if (data.begin === 0) setMessagees([...res.data.messages]);
+    else setMessagees((prev) => [...prev, ...res.data.messages]);
+  } catch (err) {
+    console.log(err);
+    alert(err.respone);
     // setIsLoadFullDataInMess(true)
   }
-}
+};
 
-export const GetRecentConversations = async (accessToken,begin, limit, setConversations, setIsLoadFullDataInCon) => {
+export const GetRecentConversations = async (
+  accessToken,
+  begin,
+  limit,
+  setConversations,
+  setIsLoadFullDataInCon
+) => {
   try {
-    let res = await Axios.get(`/conversation/get-recent?begin=${begin}&limit=${limit}`, {
-      headers: {
-        'x-access-token': accessToken
+    let res = await Axios.get(
+      `/conversation/get-recent?begin=${begin}&limit=${limit}`,
+      {
+        headers: {
+          "x-access-token": accessToken,
+        },
       }
-    })
-    if(res.data.conversations.length === 0) {
-      return false
+    );
+    if (res.data.conversations.length === 0) {
+      return false;
     }
-    setConversations(prev => [...prev, ...res.data.conversations])
-  } catch(err) {
-    console.log(err)
-    alert(err.respone)
-    setIsLoadFullDataInCon(true)
+    console.log(res.data.conversations);
+    if (begin === 0) setConversations([...res.data.conversations]);
+    else setConversations((prev) => [...prev, ...res.data.conversations]);
+  } catch (err) {
+    console.log(err);
+    alert(err.respone);
   }
-}
+};
+
+export const SearchUserApi = async (accessToken, key, setResultSearched) => {
+  try {
+    let res = await Axios.get(`/user/search?keyword=${key}`, {
+      headers: {
+        "x-access-token": accessToken,
+      },
+    });
+    console.log(res.data);
+    setResultSearched(res.data.users);
+  } catch (err) {
+    console.log(err);
+    alert(err);
+  }
+};
+
+export const CreateConversationApi = async (accessToken, data) => {
+  try {
+    let res = await Axios.post(`/conversation/create`, data, {
+      headers: {
+        "x-access-token": accessToken,
+      },
+    });
+    console.log(res.data);
+    return res.data.conversationId;
+  } catch (err) {
+    console.log(err);
+    alert(err);
+  }
+};
+
+export const GetOnlineStatusUsers = async (accessToken) => {
+  try {
+    let res = await Axios.get("/user/online-status", {
+      headers: {
+        "x-access-token": accessToken,
+      },
+    });
+    console.log(res.data);
+  } catch (err) {
+    console.log(err);
+    alert(err);
+  }
+};

@@ -20,7 +20,12 @@ import {
   GetRecentConversations,
   GetRecentMes,
   SendMesApi,
+  SearchUserApi,
+  GetOnlineStatusUsers,
+  CreateConversationApi
 } from "../../redux/apiRequest";
+import SearchByKey from "./searchByKey";
+import CreateGroup from "./createGroup";
 
 const { io } = require("socket.io-client");
 const socket = io(process.env.REACT_APP_BACKEND_URL);
@@ -43,8 +48,9 @@ const Chatting = () => {
   const [conversations, setConversations] = useState([]);
 
   // set to search users
-  const [keySeach, setKeySeach] = useState();
+  const [keySearch, setKeySearch] = useState();
   const [onFocusSearch, setOnFocusSearch] = useState(false);
+  const [resultSearched, setResultSearched] = useState([])
   const [conversationIsPicked, setConversationIsPicked] = useState();
 
   // set variables to get conversations or messages
@@ -58,18 +64,19 @@ const Chatting = () => {
   const [getNewMessage, setGetNewMessage] = useState("");
   const [avatarIsOpen, setAvatarIsOpen] = useState("none");
   const [avatarIsPicked, setAvatarIsPicked] = useState(-1);
+  const [displayCreateGroup, setDisplayCreateGroup] = useState('none')
 
   const handleOpenCreateGroup = () => {
-    alert("you have clicked on me");
+    setDisplayCreateGroup('block')
   };
-  const handleSendMes = async () => {
+  const handleSendMes = () => {
     if (!newMessage) return;
     let data = {
       from: userId,
       to: conversationIsPicked._id,
       content: newMessage,
     };
-    await SendMesApi(token, data);
+   SendMesApi(token, data);
   };
   const onNewMesChange = (e) => {
     setNewMessage(e.target.value);
@@ -79,9 +86,13 @@ const Chatting = () => {
       handleSendMes();
     }
   };
+
+  // HANDLE SEARCH USER
   const onKeySearchChange = (e) => {
-    setKeySeach(e.target.value);
+    setKeySearch(e.target.value);
+    if(e.target.value) SearchUserApi(token, e.target.value, setResultSearched)
   };
+
   const handleShowChat = (item, other) => {
     console.log("redirect to show chat");
     setConversationIsPicked({
@@ -110,7 +121,7 @@ const Chatting = () => {
         setConversations,
         setIsLoadFullDataInCon
       );
-      if (!check) setIsLoadFullDataInCon(true);
+      if (check === false) setIsLoadFullDataInCon(true);
       setBeginNumGetConver((prev) => prev + LIMIT_CONVER);
     }
   };
@@ -164,6 +175,18 @@ const Chatting = () => {
     }
   };
 
+  const createGroup = async (data) => {
+    let _converId = await CreateConversationApi(token, data)
+    if(!_converId) return
+    // let newconver = {
+    //   _id: _converId,
+    //   nameOfChat: data.title
+    // }
+    await GetRecentConversations(token, 0, LIMIT_CONVER, setConversations)
+    // setConversationIsPicked(newconver)
+    setMessagees([])
+    return 1
+  }
   const handleSetAvatar = () => {
     setAvatarIsOpen("block");
   };
@@ -174,12 +197,13 @@ const Chatting = () => {
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
+        console.log(data)
         let _data = { ...data, from: { _id: data.from } };
         setGetNewMessage(_data);
         setNewMessage("");
       }
     });
-  });
+  },[]);
   useEffect(() => {
     socket.on("connect", () => {
       socket.emit("user:connect", {
@@ -192,19 +216,23 @@ const Chatting = () => {
       LIMIT_CONVER,
       setConversations
     );
+    // GetOnlineStatusUsers(token)
   }, [userId]);
   useEffect(() => {
     if (getNewMessage) {
       setMessagees([getNewMessage, ...messagees]);
       setGetNewMessage("");
-      updateConversList();
+      // updateConversList();
+      GetRecentConversations(token, 0, LIMIT_CONVER, setConversations)
     }
   }, [getNewMessage]);
   return (
     <div className="container-fluid chatting">
       <div className="row">
         <div className="col-1 task-bar">
-          <AiOutlineHome className="home" />
+          <div className="user">
+              <img src={require(`../../assests/image/avatar2.png`)} />
+          </div>
           <AiOutlineSetting className="setting" />
         </div>
         <div className="col-3 user-list">
@@ -214,13 +242,14 @@ const Chatting = () => {
           <div className="search-bar">
             <input
               placeholder="Tìm kiếm"
-              value={keySeach}
+              value={keySearch}
               onFocus={(e) => {
                 setOnFocusSearch(true);
               }}
               onBlur={(e) => {
                 setOnFocusSearch(false);
-                setKeySeach("");
+                setKeySearch("");
+                setResultSearched([])
               }}
               onChange={(e) => onKeySearchChange(e)}
             />
@@ -301,19 +330,10 @@ const Chatting = () => {
               )}
             </>
           ) : (
-            <div className="chatted-user">
-              <p>Kết quả tìm kiếm cho "{keySeach}"</p>
-              {arr.map((item, index) => (
-                <div key={index} className="item row pt-1 pb-1">
-                  <div className="avatar col-3">
-                    <img src={require(`../../assests/image/avatar16.png`)} />
-                  </div>
-                  <div className="info col-9">
-                    <h5 className="mt-3">user name</h5>
-                  </div>
-                </div>
-              ))}
-            </div>
+           <SearchByKey 
+            keySearch = {keySearch}
+            resultSearched = {resultSearched}
+           />
           )}
         </div>
         <div className="col-8 chat">
@@ -436,6 +456,14 @@ const Chatting = () => {
             ))}
           </ul>
         </div>
+      </div>
+      <div className="create-group" style={{display: `${displayCreateGroup}`}}>
+              <CreateGroup 
+                setDisplayCreateGroup = {setDisplayCreateGroup}
+                token = {token}
+                createGroup = {createGroup}
+                userId = {userId}
+              />
       </div>
     </div>
   );
