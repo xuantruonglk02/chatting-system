@@ -26,14 +26,16 @@ import {
 } from "../../redux/apiRequest";
 import SearchByKey from "./searchByKey";
 import CreateGroup from "./createGroup";
+import userInfo from "./userInfo";
+import UserInfo from "./userInfo";
 
 const { io } = require("socket.io-client");
 const socket = io(process.env.REACT_APP_BACKEND_URL);
 
 const Chatting = () => {
-  const [arr, setArr] = useState([
+  const arr = [
     1, 2, 3, 4, 5, 6, 7, 8, 10, 39, 11, 22, 3, 5, 6,
-  ]);
+  ]
   const isScrolled = useRef(false);
   // set to fetch more data when scroll
   const converRef = useRef();
@@ -60,11 +62,14 @@ const Chatting = () => {
   const [isLoadFullDataInCon, setIsLoadFullDataInCon] = useState(false);
   const LIMIT_CONVER = 15;
   const LIMIT_MESS = 15;
+
+  // message send and receive
   const [newMessage, setNewMessage] = useState("");
   const [getNewMessage, setGetNewMessage] = useState("");
-  const [avatarIsOpen, setAvatarIsOpen] = useState("none");
-  const [avatarIsPicked, setAvatarIsPicked] = useState(-1);
+
+  // state open feature modal
   const [displayCreateGroup, setDisplayCreateGroup] = useState('none')
+  const [displayUserAction, setDisplayUserAction] = useState('none')
 
   const handleOpenCreateGroup = () => {
     setDisplayCreateGroup('block')
@@ -187,12 +192,6 @@ const Chatting = () => {
     setMessagees([])
     return 1
   }
-  const handleSetAvatar = () => {
-    setAvatarIsOpen("block");
-  };
-  const handlePickAvatar = (index) => {
-    setAvatarIsPicked(index);
-  };
 
   useEffect(() => {
     socket.on("server:message", (data) => {
@@ -230,7 +229,7 @@ const Chatting = () => {
     <div className="container-fluid chatting">
       <div className="row">
         <div className="col-1 task-bar">
-          <div className="user">
+          <div className="user" onClick={e => {setDisplayUserAction('block')}}>
               <img src={require(`../../assests/image/avatar2.png`)} />
           </div>
           <AiOutlineSetting className="setting" />
@@ -425,45 +424,20 @@ const Chatting = () => {
           )}
         </div>
       </div>
-      <div className="set-avatar">
-        <button
-          style={{
-            display: "inline",
-            position: "absolute",
-            top: "0",
-            right: "20px",
-          }}
-          onClick={handleSetAvatar}
-        >
-          click me
-        </button>
-        <div
-          className="show-or-not-frame"
-          style={{ display: `${avatarIsOpen}` }}
-        >
-          <ul>
-            {arr.map((item, index) => (
-              <li
-                key={index}
-                onClick={(e) => handlePickAvatar(index)}
-                className={index === avatarIsPicked ? "active" : ""}
-              >
-                {" "}
-                <img
-                  src={require(`../../assests/image/avatar${index + 1}.png`)}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="user-action" >
+     {displayUserAction === 'block' &&
+      <UserInfo 
+        setDisplayUserAction = {setDisplayUserAction}
+      />
+            }
       </div>
       <div className="create-group" style={{display: `${displayCreateGroup}`}}>
-              <CreateGroup 
+             {displayCreateGroup && <CreateGroup 
                 setDisplayCreateGroup = {setDisplayCreateGroup}
                 token = {token}
                 createGroup = {createGroup}
                 userId = {userId}
-              />
+              />}
       </div>
     </div>
   );

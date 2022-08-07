@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { userVeryfiMail, userLogin, userForgotPw } from "./slice/userSlice";
+import { userVeryfiMail, userLogin, userForgotPw, updateUsername } from "./slice/userSlice";
 
 const Axios = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -221,3 +221,47 @@ export const GetOnlineStatusUsers = async (accessToken) => {
     alert(err);
   }
 };
+
+export const ChangeUserNameApi = async (accessToken, data, setErrMessChangeUsername, dispatch) => {
+  try {
+   await  Axios.post('/user/profile/change/name', data, {
+      headers: {
+        'x-access-token': accessToken
+      }
+    })
+    dispatch(updateUsername(data.newName))
+    return 1
+  } catch(err) {
+    console.log(err)
+    setErrMessChangeUsername(err.response?.data?.errorMessage)
+  }
+}
+
+export const ChangePwApi = async (accessToken, data, setErrMessChangePw) => {
+  try {
+    await Axios.post('/user/profile/change/password', data, {
+      headers: {
+        'x-access-token': accessToken
+      }
+    })
+    setErrMessChangePw('Đổi mật khẩu thành công')
+    return 1
+  } catch(err) {
+    console.log(err)
+    setErrMessChangePw(err.response?.data?.errorMessage)
+  }
+}
+
+export const ChangeAvtApi = async (accessToken, data) => {
+  try {
+    await Axios.post('/user/profile/change/avatar', data, {
+      headers: {
+        'x-access-token': accessToken
+      }
+    })
+    return 1
+  } catch(err) {
+    console.log(err)
+    alert(err)
+  }
+}

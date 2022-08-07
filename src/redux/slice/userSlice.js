@@ -26,9 +26,12 @@ const userSlice = createSlice({
           email: action.payload.email
         }
         state.user = user
+    },
+    updateUsername: (state, action) => {
+      state.user.name = action.payload
     }
   },
 });
 
-export const {userLogin, userLogout, userVeryfiMail, userForgotPw} = userSlice.actions;
+export const {userLogin, userLogout, userVeryfiMail, userForgotPw, updateUsername} = userSlice.actions;
 export default userSlice.reducer;
