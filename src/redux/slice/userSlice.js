@@ -29,9 +29,12 @@ const userSlice = createSlice({
     },
     updateUsername: (state, action) => {
       state.user.name = action.payload
+    },
+    updateAvtUrl: (state, action) => {
+      state.user.avatarUrl = action.payload
     }
   },
 });
 
-export const {userLogin, userLogout, userVeryfiMail, userForgotPw, updateUsername} = userSlice.actions;
+export const {userLogin, userLogout, userVeryfiMail, userForgotPw, updateUsername, updateAvtUrl} = userSlice.actions;
 export default userSlice.reducer;

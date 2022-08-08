@@ -45,7 +45,8 @@ const Chatting = () => {
   // info of user
   const token = useSelector((state) => state.reducer.user.user?.accessToken);
   const userId = useSelector((state) => state.reducer.user.user?.userId);
-
+  const avatarUrl = useSelector((state) => state.reducer.user.user?.avatarUrl);
+  
   const [messagees, setMessagees] = useState([]);
   const [conversations, setConversations] = useState([]);
 
@@ -99,10 +100,11 @@ const Chatting = () => {
   };
 
   const handleShowChat = (item, other) => {
-    console.log("redirect to show chat");
     setConversationIsPicked({
       ...item,
       nameOfChat: item.title || other.name,
+      avatarUrl: item.avatarUrl || other.avatarUrl,
+      status: other.status
     });
     let data = {
       conversationId: item._id,
@@ -113,6 +115,14 @@ const Chatting = () => {
     setBeginNumGetMess(0);
     setIsLoadFullDataInMess(false);
   };
+  const handleShowChatFromSearchBox = (item) => {
+    setConversationIsPicked({
+      ...item,
+      nameOfChat: item.name
+    })
+    console.log(item)
+    setMessagees([])
+  }
   const scrollConvers = () => {
     const { scrollTop, scrollHeight, clientHeight } = converRef.current;
     if (
@@ -225,7 +235,7 @@ const Chatting = () => {
       <div className="row">
         <div className="col-1 task-bar">
           <div className="user" onClick={e => {setDisplayUserAction('block')}}>
-              <img src={require(`../../assests/image/avatar2.png`)} />
+              <img src={require(`../../assests/image/${avatarUrl}`)} />
           </div>
           <AiOutlineSetting className="setting" />
         </div>
@@ -239,11 +249,6 @@ const Chatting = () => {
               value={keySearch}
               onFocus={(e) => {
                 setOnFocusSearch(true);
-              }}
-              onBlur={(e) => {
-                setOnFocusSearch(false);
-                setKeySearch("");
-                setResultSearched([])
               }}
               onChange={(e) => onKeySearchChange(e)}
             />
@@ -283,6 +288,7 @@ const Chatting = () => {
                       for (let i = 0; i < item.userIds.length; i++) {
                         if (item.userIds[i]._id !== userId) {
                           other = item.userIds[i];
+                          item.avatarUrl = item.userIds[i].avatarUrl
                         }
                       }
                     }
@@ -294,9 +300,9 @@ const Chatting = () => {
                         id="user-item"
                       >
                         <div className="avatar col-3">
-                          <img
-                            src={require(`../../assests/image/avatar16.png`)}
-                          />
+                         {item.avatarUrl && <img
+                            src={require(`../../assests/image/${item.avatarUrl}`)}
+                          />}
                         </div>
                         <div className="info col-9">
                           <h5>{item.title || other.name}</h5>
@@ -327,6 +333,10 @@ const Chatting = () => {
            <SearchByKey 
             keySearch = {keySearch}
             resultSearched = {resultSearched}
+            handleShowChatFromSearchBox = {handleShowChatFromSearchBox}
+            setOnFocusSearch = {setOnFocusSearch}
+            setResultSearched = {setResultSearched}
+            setKeySearch = {setKeySearch}
            />
           )}
         </div>
@@ -340,11 +350,11 @@ const Chatting = () => {
               <div className="row chat-top">
                 <div className="col-6 user">
                   <div className="avatar">
-                    <img src={require(`../../assests/image/avatar11.png`)} />
+                   {conversationIsPicked.avatarUrl &&  <img src={require(`../../assests/image/${conversationIsPicked.avatarUrl}`)} />}
                   </div>
                   <div className="status">
                     <h5>{conversationIsPicked.nameOfChat}</h5>
-                    <p> active</p>
+                    <p> {conversationIsPicked.status ? conversationIsPicked.status : ''}</p>
                   </div>
                 </div>
                 <div className="col-6 call-action">
@@ -354,7 +364,7 @@ const Chatting = () => {
                 </div>
               </div>
               <div className="chat-middle" ref={messRef} onScroll={scrollMess}>
-                {!messagees ? (
+                {messagees.length === 0 ? (
                   <p
                     style={{ color: "black", display: "block" }}
                     className="text-center mt-3"
