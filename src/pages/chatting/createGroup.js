@@ -7,17 +7,20 @@ import { TiTick } from "react-icons/ti";
 import { SearchUserApi } from "../../redux/apiRequest";
 
 const CreateGroup = (props) => {
+  const arr = [1, 2, 3, 4, 5, 6, 7, 8, 10, 39, 11, 22, 3, 5, 6];
   const [listUserPicked, setListUserPicked] = useState([]);
   const [groupName, setGroupName] = useState();
   const { setDisplayCreateGroup, token, createGroup, userId } = props;
   const [resultSearched, setResultSearched] = useState([]);
-  const [allowCreate, setAllowCreate] = useState('disable')
-  const [displayLoader, setDisplayLoader] = useState('none')
+  const [allowCreate, setAllowCreate] = useState("disable");
+  const [displayLoader, setDisplayLoader] = useState("none");
+  const [avatarIsOpen, setAvatarIsOpen] = useState("none");
+  const [avatarIsPicked, setAvatarIsPicked] = useState(-1);
 
   const handleClose = () => {
     setDisplayCreateGroup("none");
-    setGroupName('')
-    setAllowCreate('disable')
+    setGroupName("");
+    setAllowCreate("disable");
     setListUserPicked([]);
     setResultSearched([]);
   };
@@ -25,46 +28,56 @@ const CreateGroup = (props) => {
     if (e.target.value) SearchUserApi(token, e.target.value, setResultSearched);
   };
   const onGroupNameChange = (e) => {
-    setGroupName(e.target.value)
-  }
+    setGroupName(e.target.value);
+  };
   const handleAddUserToTemp = (item) => {
-    if(item._id === userId) return
-    let temp = listUserPicked
+    if (item._id === userId) return;
+    let temp = listUserPicked;
     temp.push(item);
     setListUserPicked([...temp]);
   };
   const handleRemoveToTemp = (index) => {
-    let temp = listUserPicked
+    let temp = listUserPicked;
     temp.splice(index, 1);
     setListUserPicked([...temp]);
   };
 
   const handleCreateGroup = async () => {
-    if(!groupName) {
-      alert('Tên group không được để trống!')
+    if (!groupName) {
+      alert("Tên group không được để trống!");
     }
-    if(allowCreate === 'disable') return 
-    let userIds = []
-    for(let i = 0; i < listUserPicked.length; i++) {
-      userIds.push(listUserPicked[i]._id)
+    if (allowCreate === "disable") return;
+    let userIds = [];
+    for (let i = 0; i < listUserPicked.length; i++) {
+      userIds.push(listUserPicked[i]._id);
     }
-    userIds.push(userId)
+    userIds.push(userId);
     let data = {
       title: groupName,
       userIds: userIds,
-    }
-    setAllowCreate('isLoading')
-    setDisplayLoader('block')
-    await createGroup(data)
-    handleClose()
-  }
-  useEffect( () => {
-    if(listUserPicked.length > 1) {
-      setAllowCreate('')
+    };
+    setAllowCreate("isLoading");
+    setDisplayLoader("block");
+    await createGroup(data);
+    handleClose();
+  };
+  const handleOpenSetAvatar = () => {
+    setAvatarIsOpen("block");
+  };
+  const handlePickAvatar = (index) => {
+    setAvatarIsPicked(index);
+  };
+  const handleSetAvt = () => {
+    if (avatarIsPicked === -1) return;
+    setAvatarIsOpen("none");
+  };
+  useEffect(() => {
+    if (listUserPicked.length > 1) {
+      setAllowCreate("");
     } else {
-      setAllowCreate('disable')
+      setAllowCreate("disable");
     }
-  }, [listUserPicked])
+  }, [listUserPicked]);
   return (
     <>
       <div className="overlay"></div>
@@ -74,8 +87,12 @@ const CreateGroup = (props) => {
           Tạo nhóm <IoMdClose className="x-close" onClick={handleClose} />
         </h4>
         <div className="name-of-group">
-          <BsCameraFill className="camera" />
-          <input placeholder="Nhập tên nhóm..." value={groupName} onChange={e => onGroupNameChange(e)}></input>
+          <BsCameraFill className="camera" onClick={handleOpenSetAvatar} />
+          <input
+            placeholder="Nhập tên nhóm..."
+            value={groupName}
+            onChange={(e) => onGroupNameChange(e)}
+          ></input>
         </div>
         <div className="list-user-picked">
           {listUserPicked.map((item, index) => (
@@ -123,10 +140,50 @@ const CreateGroup = (props) => {
         </div>
         <div className="btns-action">
           <button onClick={handleClose}>Huỷ</button>
-          <button className={allowCreate} onClick={handleCreateGroup}>Tạo nhóm</button>
-          <div className="loader" style={{display: `${displayLoader}`}}></div>
+          <button className={allowCreate} onClick={handleCreateGroup}>
+            Tạo nhóm
+          </button>
+          <div className="loader" style={{ display: `${displayLoader}` }}></div>
         </div>
       </div>
+      {avatarIsOpen === "block" && (
+        <div className="set-avatar">
+          <div
+            className="show-or-not-frame"
+            style={{ display: `${avatarIsOpen}` }}
+          >
+            <ul>
+              {arr.map((item, index) => (
+                <li
+                  key={index}
+                  onClick={(e) => handlePickAvatar(index)}
+                  className={index === avatarIsPicked ? "active" : ""}
+                >
+                  {" "}
+                  <img
+                    src={require(`../../assests/image/avatar${index + 1}.png`)}
+                  />
+                </li>
+              ))}
+            </ul>
+            <div className="btn-action">
+              <button
+                onClick={(e) => {
+                  setAvatarIsOpen("none");
+                }}
+              >
+                Hủy
+              </button>
+              <button
+                className={avatarIsPicked === -1 ? "disable" : ""}
+                onClick={handleSetAvt}
+              >
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

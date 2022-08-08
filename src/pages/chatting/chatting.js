@@ -183,12 +183,7 @@ const Chatting = () => {
   const createGroup = async (data) => {
     let _converId = await CreateConversationApi(token, data)
     if(!_converId) return
-    // let newconver = {
-    //   _id: _converId,
-    //   nameOfChat: data.title
-    // }
     await GetRecentConversations(token, 0, LIMIT_CONVER, setConversations)
-    // setConversationIsPicked(newconver)
     setMessagees([])
     return 1
   }
@@ -257,7 +252,7 @@ const Chatting = () => {
             <>
               <div className="users-active">
                 <Swiper
-                  navigation={true}
+                  // navigation={true}
                   grabCursor={true}
                   spaceBetween={10}
                   slidesPerView={"auto"}
@@ -432,7 +427,7 @@ const Chatting = () => {
             }
       </div>
       <div className="create-group" style={{display: `${displayCreateGroup}`}}>
-             {displayCreateGroup && <CreateGroup 
+             {displayCreateGroup === 'block' && <CreateGroup 
                 setDisplayCreateGroup = {setDisplayCreateGroup}
                 token = {token}
                 createGroup = {createGroup}
