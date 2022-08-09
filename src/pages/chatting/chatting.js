@@ -196,17 +196,13 @@ const Chatting = () => {
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
+        console.log(data);
         setGetNewMessage(data);
         setNewMessage("");
       }
     });
   },[]);
   useEffect(() => {
-    // socket.on("connect", () => {
-    //   socket.emit("user:connect", {
-    //     userId: userId,
-    //   });
-    // });
     GetRecentConversations(
       token,
       beginNumGetConver,
@@ -289,6 +285,10 @@ const Chatting = () => {
                         }
                       }
                     }
+                    const userSendMessageIndex = item.userIds.findIndex(user => user._id === item.lastMessage?.from._id);
+                    const userSendMessage = userSendMessageIndex === -1
+                      ? null
+                      : item.userIds?.[userSendMessageIndex];
                     return (
                       <div
                         key={index}
@@ -312,7 +312,7 @@ const Chatting = () => {
                               overflow: " hidden",
                             }}
                           >
-                            {item.lastMessage?.content}
+                            {`${userSendMessage._id === userId ? 'Bạn' : userSendMessage.name}: ${item.lastMessage?.content}`}
                           </p>
                         </div>
                       </div>
