@@ -46,6 +46,11 @@ const Chatting = () => {
   const token = useSelector((state) => state.reducer.user.user?.accessToken);
   const userId = useSelector((state) => state.reducer.user.user?.userId);
 
+  // setup socket
+  socket.emit("user:connect", {
+    userId: userId,
+  });
+
   const [messagees, setMessagees] = useState([]);
   const [conversations, setConversations] = useState([]);
 
@@ -199,11 +204,11 @@ const Chatting = () => {
     });
   },[]);
   useEffect(() => {
-    socket.on("connect", () => {
-      socket.emit("user:connect", {
-        userId: userId,
-      });
-    });
+    // socket.on("connect", () => {
+    //   socket.emit("user:connect", {
+    //     userId: userId,
+    //   });
+    // });
     GetRecentConversations(
       token,
       beginNumGetConver,
@@ -278,6 +283,7 @@ const Chatting = () => {
                   ref={converRef}
                 >
                   {conversations.map((item, index) => {
+                    console.log(item);
                     let other = {};
                     if (item.type === "ptp") {
                       for (let i = 0; i < item.userIds.length; i++) {
@@ -295,7 +301,7 @@ const Chatting = () => {
                       >
                         <div className="avatar col-3">
                           <img
-                            src={require(`../../assests/image/avatar16.png`)}
+                            src={require(`../../assests/image/${item.avatarUrl || 'avatar1.png'}`)}
                           />
                         </div>
                         <div className="info col-9">

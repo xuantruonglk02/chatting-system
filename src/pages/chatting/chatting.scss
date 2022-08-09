@@ -1,5 +1,6 @@
 .chatting {
     height: 100vh;
+    overflow-y: hidden;
     .task-bar {
         border-right: 2px solid #ccc;
         position: relative;
