@@ -105,7 +105,7 @@ const Chatting = () => {
   };
 
   const handleShowChat = (item, other) => {
-    console.log("redirect to show chat");
+    // console.log("redirect to show chat");
     setConversationIsPicked({
       ...item,
       nameOfChat: item.title || other.name,
@@ -160,11 +160,10 @@ const Chatting = () => {
       !isLoadFullDataInMess
     ) {
       if (!isScrolled.current) {
-        console.log("you are calling me");
-        console.log(beginNumGetConver);
+        // console.log("you are calling me");
         isScrolled.current = true;
         setTimeout(async () => {
-          console.log("you are calling me");
+          // console.log("you are calling me");
           let data = {
             conversationId: conversationIsPicked._id,
             begin: beginNumGetMess + LIMIT_MESS,
@@ -197,9 +196,7 @@ const Chatting = () => {
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
-        console.log(data)
-        let _data = { ...data, from: { _id: data.from } };
-        setGetNewMessage(_data);
+        setGetNewMessage(data);
         setNewMessage("");
       }
     });
@@ -231,7 +228,7 @@ const Chatting = () => {
       <div className="row">
         <div className="col-1 task-bar">
           <div className="user" onClick={e => {setDisplayUserAction('block')}}>
-              <img src={require(`../../assests/image/avatar2.png`)} />
+              <img src={require(`../../assests/image/${avatarUrl}`)} />
           </div>
           <AiOutlineSetting className="setting" />
         </div>
@@ -346,7 +343,7 @@ const Chatting = () => {
               <div className="row chat-top">
                 <div className="col-6 user">
                   <div className="avatar">
-                    <img src={require(`../../assests/image/avatar11.png`)} />
+                    <img src={require(`../../assests/image/${conversationIsPicked.avatarUrl}`)} />
                   </div>
                   <div className="status">
                     <h5>{conversationIsPicked.nameOfChat}</h5>
@@ -396,7 +393,7 @@ const Chatting = () => {
                         <div className={`user-chat ${messFrom}`}>
                           <div className="avatar">
                             <img
-                              src={require(`../../assests/image/avatar13.png`)}
+                              src={require(`../../assests/image/${item.from.avatarUrl}`)}
                             />
                           </div>
                           <p title={sentTime}>{item.content}</p>
