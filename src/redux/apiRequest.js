@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { userVeryfiMail, userLogin, userForgotPw, updateUsername } from "./slice/userSlice";
+import { userVeryfiMail, userLogin, userForgotPw, updateUsername, updateAvtUrl } from "./slice/userSlice";
 
 const Axios = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -252,13 +252,14 @@ export const ChangePwApi = async (accessToken, data, setErrMessChangePw) => {
   }
 }
 
-export const ChangeAvtApi = async (accessToken, data) => {
+export const ChangeAvtApi = async (accessToken, data, dispatch) => {
   try {
     await Axios.post('/user/profile/change/avatar', data, {
       headers: {
         'x-access-token': accessToken
       }
     })
+    dispatch(updateAvtUrl(data.newAvatarUrl))
     return 1
   } catch(err) {
     console.log(err)

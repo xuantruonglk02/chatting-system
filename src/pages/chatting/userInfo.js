@@ -16,6 +16,7 @@ const UserInfo = (props) => {
 
   const token = useSelector((state) => state.reducer.user.user?.accessToken);
   const username = useSelector((state) => state.reducer.user.user?.name);
+  const avatarUrl = useSelector((state) => state.reducer.user.user?.avatarUrl);
   const email = useSelector((state) => state.reducer.user.user?.email);
 
   const { setDisplayUserAction } = props;
@@ -121,7 +122,7 @@ const UserInfo = (props) => {
     let data = {
       newAvatarUrl: 'avatar' + avatarIsPicked + '.png'
     }
-    let success = await ChangeAvtApi(token, data)
+    let success = await ChangeAvtApi(token, data, dispatch)
     if(success === 1) setAvatarIsOpen('none')
   }
 
@@ -189,7 +190,7 @@ const UserInfo = (props) => {
         }}
       >
         <div className="avatar">
-          <img src={require(`../../assests/image/avatar3.png`)} />
+          <img src={require(`../../assests/image/${avatarUrl}`)} />
             <BsCameraFill onClick={handleOpenSetAvatar}/>
         </div>
         <div className="user-name">
@@ -283,7 +284,7 @@ const UserInfo = (props) => {
               >
                 {" "}
                 <img
-                  src={require(`../../assests/image/avatar${index + 1}.png`)}
+                  src={require(`../../assests/image/avatar${index}.png`)}
                 />
               </li>
             ))}

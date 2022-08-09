@@ -161,7 +161,7 @@ const CreateGroup = (props) => {
                 >
                   {" "}
                   <img
-                    src={require(`../../assests/image/avatar${index + 1}.png`)}
+                    src={require(`../../assests/image/avatar${index}.png`)}
                   />
                 </li>
               ))}

@@ -45,6 +45,7 @@ const Chatting = () => {
   // info of user
   const token = useSelector((state) => state.reducer.user.user?.accessToken);
   const userId = useSelector((state) => state.reducer.user.user?.userId);
+  const avatarUrl = useSelector((state) => state.reducer.user.user?.avatarUrl);
 
   // setup socket
   socket.emit("user:connect", {
@@ -283,7 +284,6 @@ const Chatting = () => {
                   ref={converRef}
                 >
                   {conversations.map((item, index) => {
-                    console.log(item);
                     let other = {};
                     if (item.type === "ptp") {
                       for (let i = 0; i < item.userIds.length; i++) {
@@ -300,9 +300,9 @@ const Chatting = () => {
                         id="user-item"
                       >
                         <div className="avatar col-3">
-                          <img
-                            src={require(`../../assests/image/${item.avatarUrl || 'avatar1.png'}`)}
-                          />
+                         {item.avatarUrl && <img
+                            src={require(`../../assests/image/${item.avatarUrl}`)}
+                          />}
                         </div>
                         <div className="info col-9">
                           <h5>{item.title || other.name}</h5>
