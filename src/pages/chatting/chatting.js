@@ -216,9 +216,7 @@ const Chatting = () => {
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
-        console.log(data);
-        let _data = { ...data, from: { _id: data.from } };
-        setGetNewMessage(_data);
+        setGetNewMessage(data);
         setNewMessage("");
       }
     });
@@ -235,10 +233,14 @@ const Chatting = () => {
   }, [userId]);
   useEffect(() => {
     if (getNewMessage) {
+      GetRecentConversations(token, 0, LIMIT_CONVER, setConversations);
+
+      if (getNewMessage.to !== conversationIsPicked?._id) {
+        return;
+      }
       setMessagees([getNewMessage, ...messagees]);
       setGetNewMessage("");
       setSendingMess(false)
-      GetRecentConversations(token, 0, LIMIT_CONVER, setConversations);
     }
   }, [getNewMessage]);
   return (
@@ -446,7 +448,7 @@ const Chatting = () => {
                         <div className={`user-chat ${messFrom}`}>
                           <div className="avatar" title={userSentMess}>
                             <img
-                              src={require(`../../assests/image/avatar13.png`)}
+                              src={require(`../../assests/image/${messFrom === 'me' ? avatarUrl : item.from.avatarUrl}`)}
                             />
                           </div>
                           <p title={sentTime}>{item.content}</p>
