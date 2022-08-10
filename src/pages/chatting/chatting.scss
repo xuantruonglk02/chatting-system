@@ -214,9 +214,8 @@
             color: white;
         }
         .other {
-            p {
-                background-color:blueviolet;
-            }
+            padding: 5px 0px;
+            
             .avatar {
                 float: left; 
                 height: 45px;
@@ -231,9 +230,27 @@
                     overflow: hidden;
                 }
             }
+            .message {
+                position: relative;
+
+                .name {
+                    font-size: 12px;
+                    color: #000;
+                    position: absolute;
+                    top: -25px;
+                    
+
+                }
+                .content {
+                    
+                    background-color:blueviolet;
+                    
+                }
+            }
         }
         .me {
             text-align: right;
+           
             .avatar {
                 float: right; 
                 height: 45px;
@@ -249,9 +266,19 @@
                     overflow: hidden;
                 }
             }
-            p {
-                text-align: left;
-                background-color: #328AFC;
+         
+            .message {
+                position: relative;
+
+                .name {
+                 display: none;
+                }
+                .content {
+                   
+                    text-align: left;  
+                    background-color: #328AFC;
+                     
+                }
             }
         }
        }

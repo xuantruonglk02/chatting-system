@@ -221,9 +221,15 @@ const Chatting = () => {
  
   useEffect(() => {
     setTimeout(() => {
-      debugger
-      GetUsersOnline(token, setListUserOnline)
-      setExecuteGetUserOnline(prev => prev ? false: true)
+      debugger;
+      GetRecentConversations(
+        token,
+        beginNumGetConver,
+        LIMIT_CONVER,
+        setConversations
+      );
+      GetUsersOnline(token, setListUserOnline);
+      setExecuteGetUserOnline(prev => prev ? false: true);
     }, 30000)
   }, [executeGetUserOnline])
   useEffect(() => {
@@ -302,6 +308,7 @@ const Chatting = () => {
                     <SwiperSlide key={index}>
                       <div
                         className="users-active-item"
+                        title={item.name}
                         onClick={(e) => handleShowChatFromUserActive(item)}
                       >
                         <img src={require(`../../assests/image/${item.avatarUrl}`)} />
@@ -461,8 +468,14 @@ const Chatting = () => {
                             <img
                               src={require(`../../assests/image/${messFrom === 'me' ? avatarUrl : item.from.avatarUrl}`)}
                             />
+                            
                           </div>
-                          <p title={sentTime}>{item.content}</p>
+                          <div className="message">
+                          <p className="name">{item.from.name}</p>
+                          <p className="content" title={sentTime}>{item.content}</p>
+                          </div>
+                       
+                         
                         </div>
                       </div>
                     );
