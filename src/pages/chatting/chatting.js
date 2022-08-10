@@ -7,13 +7,12 @@ import "swiper/css/pagination";
 import "swiper/css/bundle";
 import { BsFillCameraVideoFill, BsMic } from "react-icons/bs";
 import { FiPhoneCall, FiSend } from "react-icons/fi";
+import {GoPrimitiveDot} from 'react-icons/go'
 import {
   AiOutlineExclamationCircle,
   AiFillCamera,
-  AiOutlineHome,
   AiOutlineSetting,
 } from "react-icons/ai";
-import { useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -21,39 +20,36 @@ import {
   GetRecentMes,
   SendMesApi,
   SearchUserApi,
-  GetOnlineStatusUsers,
-  CreateConversationApi
+  CreateConversationApi,
+  GetUsersOnline,
+  GetConversationPtp
 } from "../../redux/apiRequest";
 import SearchByKey from "./searchByKey";
 import CreateGroup from "./createGroup";
-import userInfo from "./userInfo";
 import UserInfo from "./userInfo";
 
 const { io } = require("socket.io-client");
 const socket = io(process.env.REACT_APP_BACKEND_URL);
 
 const Chatting = () => {
-  const arr = [
-    1, 2, 3, 4, 5, 6, 7, 8, 10, 39, 11, 22, 3, 5, 6,
-  ]
   const isScrolled = useRef(false);
   // set to fetch more data when scroll
   const converRef = useRef();
   const messRef = useRef();
-  const scrollToBottomRef = useRef();
 
   // info of user
   const token = useSelector((state) => state.reducer.user.user?.accessToken);
   const userId = useSelector((state) => state.reducer.user.user?.userId);
   const avatarUrl = useSelector((state) => state.reducer.user.user?.avatarUrl);
-  
+
   const [messagees, setMessagees] = useState([]);
   const [conversations, setConversations] = useState([]);
+  const [listUserOnline,  setListUserOnline] = useState([])
 
   // set to search users
   const [keySearch, setKeySearch] = useState();
   const [onFocusSearch, setOnFocusSearch] = useState(false);
-  const [resultSearched, setResultSearched] = useState([])
+  const [resultSearched, setResultSearched] = useState([]);
   const [conversationIsPicked, setConversationIsPicked] = useState();
 
   // set variables to get conversations or messages
@@ -66,23 +62,25 @@ const Chatting = () => {
 
   // message send and receive
   const [newMessage, setNewMessage] = useState("");
+  const [sendingMess, setSendingMess] = useState(false)
   const [getNewMessage, setGetNewMessage] = useState("");
 
   // state open feature modal
-  const [displayCreateGroup, setDisplayCreateGroup] = useState('none')
-  const [displayUserAction, setDisplayUserAction] = useState('none')
+  const [displayCreateGroup, setDisplayCreateGroup] = useState("none");
+  const [displayUserAction, setDisplayUserAction] = useState("none");
 
   const handleOpenCreateGroup = () => {
-    setDisplayCreateGroup('block')
+    setDisplayCreateGroup("block");
   };
-  const handleSendMes = () => {
+  const handleSendMes = async() => {
     if (!newMessage) return;
     let data = {
       from: userId,
       to: conversationIsPicked._id,
       content: newMessage,
     };
-   SendMesApi(token, data);
+    setSendingMess(true)
+    await SendMesApi(token, data);
   };
   const onNewMesChange = (e) => {
     setNewMessage(e.target.value);
@@ -96,7 +94,7 @@ const Chatting = () => {
   // HANDLE SEARCH USER
   const onKeySearchChange = (e) => {
     setKeySearch(e.target.value);
-    if(e.target.value) SearchUserApi(token, e.target.value, setResultSearched)
+    if (e.target.value) SearchUserApi(token, e.target.value, setResultSearched);
   };
 
   const handleShowChat = (item, other) => {
@@ -104,7 +102,7 @@ const Chatting = () => {
       ...item,
       nameOfChat: item.title || other.name,
       avatarUrl: item.avatarUrl || other.avatarUrl,
-      status: other.status
+      status: other.status,
     });
     let data = {
       conversationId: item._id,
@@ -115,14 +113,42 @@ const Chatting = () => {
     setBeginNumGetMess(0);
     setIsLoadFullDataInMess(false);
   };
+  const handleShowChatFromUserActive = async (item) => {
+    setConversationIsPicked({
+      ...item,
+      nameOfChat: item.title,
+      status: 'online'
+    });
+    debugger
+    let conversation = await GetConversationPtp(token, item._id)
+    let data = {
+      conversationId: conversation ? conversation._id: item._id,
+      begin: 0,
+      limit: LIMIT_MESS,
+    };
+    setMessagees([])
+    conversation && await GetRecentMes(token, data, setMessagees);
+    setBeginNumGetMess(0);
+    setIsLoadFullDataInMess(false);
+  }
   const handleShowChatFromSearchBox = (item) => {
     setConversationIsPicked({
       ...item,
       nameOfChat: item.name
-    })
-    console.log(item)
-    setMessagees([])
-  }
+    });
+    debugger
+    if(item.hasConversation){
+      let data = {
+        conversationId: item._id,
+        begin: 0,
+        limit: LIMIT_MESS
+      }
+       GetRecentMes(token, data, setMessagees) 
+      }
+       else  setMessagees([])
+       setBeginNumGetMess(0)
+       setIsLoadFullDataInMess(false);
+  };
   const scrollConvers = () => {
     const { scrollTop, scrollHeight, clientHeight } = converRef.current;
     if (
@@ -140,23 +166,7 @@ const Chatting = () => {
       setBeginNumGetConver((prev) => prev + LIMIT_CONVER);
     }
   };
-  const updateConversList = () => {
-    let _conver = conversations;
-    if (_conver[0]._id === conversationIsPicked._id) {
-      _conver[0].lastMessage.content = getNewMessage.content;
-      setConversations([..._conver]);
-      return;
-    }
-    for (let i = 0; i < _conver.length; i++) {
-      if (_conver[i]._id === conversationIsPicked._id) {
-        let temp = _conver[i];
-        temp.lastMessage.content = getNewMessage.content;
-        _conver.splice(i, 1);
-        _conver.unshift(temp);
-        return;
-      }
-    }
-  };
+  
   const scrollMess = async () => {
     const { scrollTop, scrollHeight, clientHeight } = messRef.current;
     if (
@@ -191,23 +201,23 @@ const Chatting = () => {
   };
 
   const createGroup = async (data) => {
-    let _converId = await CreateConversationApi(token, data)
-    if(!_converId) return
-    await GetRecentConversations(token, 0, LIMIT_CONVER, setConversations)
-    setMessagees([])
-    return 1
-  }
+    let _converId = await CreateConversationApi(token, data);
+    if (!_converId) return;
+    await GetRecentConversations(token, 0, LIMIT_CONVER, setConversations);
+    setMessagees([]);
+    return 1;
+  };
 
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
-        console.log(data)
+        console.log(data);
         let _data = { ...data, from: { _id: data.from } };
         setGetNewMessage(_data);
         setNewMessage("");
       }
     });
-  },[]);
+  }, []);
   useEffect(() => {
     socket.on("connect", () => {
       socket.emit("user:connect", {
@@ -220,22 +230,28 @@ const Chatting = () => {
       LIMIT_CONVER,
       setConversations
     );
+    GetUsersOnline(token, setListUserOnline)
     // GetOnlineStatusUsers(token)
   }, [userId]);
   useEffect(() => {
     if (getNewMessage) {
       setMessagees([getNewMessage, ...messagees]);
       setGetNewMessage("");
-      // updateConversList();
-      GetRecentConversations(token, 0, LIMIT_CONVER, setConversations)
+      setSendingMess(false)
+      GetRecentConversations(token, 0, LIMIT_CONVER, setConversations);
     }
   }, [getNewMessage]);
   return (
     <div className="container-fluid chatting">
       <div className="row">
         <div className="col-1 task-bar">
-          <div className="user" onClick={e => {setDisplayUserAction('block')}}>
-              <img src={require(`../../assests/image/${avatarUrl}`)} />
+          <div
+            className="user"
+            onClick={(e) => {
+              setDisplayUserAction("block");
+            }}
+          >
+            <img src={require(`../../assests/image/${avatarUrl}`)} />
           </div>
           <AiOutlineSetting className="setting" />
         </div>
@@ -264,13 +280,14 @@ const Chatting = () => {
                   freeMode={true}
                   modules={[Pagination, Navigation, FreeMode]}
                 >
-                  {arr.map((item, index) => (
+                  {listUserOnline.map((item, index) => (
                     <SwiperSlide key={index}>
                       <div
                         className="users-active-item"
-                        // onClick={(e) => handleShowChat(item)}
+                        onClick={(e) => handleShowChatFromUserActive(item)}
                       >
-                        <img src={require("../../assests/image/avatar1.png")} />
+                        <img src={require(`../../assests/image/${item.avatarUrl}`)} />
+                        <GoPrimitiveDot className="active" />
                       </div>
                     </SwiperSlide>
                   ))}
@@ -288,7 +305,7 @@ const Chatting = () => {
                       for (let i = 0; i < item.userIds.length; i++) {
                         if (item.userIds[i]._id !== userId) {
                           other = item.userIds[i];
-                          item.avatarUrl = item.userIds[i].avatarUrl
+                          item.avatarUrl = item.userIds[i].avatarUrl;
                         }
                       }
                     }
@@ -300,9 +317,10 @@ const Chatting = () => {
                         id="user-item"
                       >
                         <div className="avatar col-3">
-                         {item.avatarUrl && <img
-                            src={require(`../../assests/image/${item.avatarUrl}`)}
-                          />}
+                            <img
+                              src={require(`../../assests/image/${item.avatarUrl}`)}
+                            />
+                            <GoPrimitiveDot className="active" />
                         </div>
                         <div className="info col-9">
                           <h5>{item.title || other.name}</h5>
@@ -330,14 +348,14 @@ const Chatting = () => {
               )}
             </>
           ) : (
-           <SearchByKey 
-            keySearch = {keySearch}
-            resultSearched = {resultSearched}
-            handleShowChatFromSearchBox = {handleShowChatFromSearchBox}
-            setOnFocusSearch = {setOnFocusSearch}
-            setResultSearched = {setResultSearched}
-            setKeySearch = {setKeySearch}
-           />
+            <SearchByKey
+              keySearch={keySearch}
+              resultSearched={resultSearched}
+              handleShowChatFromSearchBox={handleShowChatFromSearchBox}
+              setOnFocusSearch={setOnFocusSearch}
+              setResultSearched={setResultSearched}
+              setKeySearch={setKeySearch}
+            />
           )}
         </div>
         <div className="col-8 chat">
@@ -350,11 +368,20 @@ const Chatting = () => {
               <div className="row chat-top">
                 <div className="col-6 user">
                   <div className="avatar">
-                   {conversationIsPicked.avatarUrl &&  <img src={require(`../../assests/image/${conversationIsPicked.avatarUrl}`)} />}
+                    {conversationIsPicked.avatarUrl && (
+                      <img
+                        src={require(`../../assests/image/${conversationIsPicked.avatarUrl}`)}
+                      />
+                    )}
                   </div>
                   <div className="status">
                     <h5>{conversationIsPicked.nameOfChat}</h5>
-                    <p> {conversationIsPicked.status ? conversationIsPicked.status : ''}</p>
+                    <p>
+                      {" "}
+                      {conversationIsPicked.status
+                        ? conversationIsPicked.status
+                        : ""}
+                    </p>
                   </div>
                 </div>
                 <div className="col-6 call-action">
@@ -364,10 +391,19 @@ const Chatting = () => {
                 </div>
               </div>
               <div className="chat-middle" ref={messRef} onScroll={scrollMess}>
+              {sendingMess && 
+              <div className="text-end pe-4" style={{color: 'black', width: '100%'}}>Đang gửi...</div>
+              }
                 {messagees.length === 0 ? (
                   <p
-                    style={{ color: "black", display: "block" }}
                     className="text-center mt-3"
+                    style={{
+                      width: "100%",
+                      fontSize: "20px",
+                      color: "black",
+                      display: "block",
+                      margin: "0 auto",
+                    }}
                   >
                     {" "}
                     Chưa có tin nhắn trong cuộc trò chuyện
@@ -375,6 +411,7 @@ const Chatting = () => {
                 ) : (
                   messagees.map((item, index) => {
                     let messFrom = "";
+                    let userSentMess = item.from.name
                     let sentTime = "";
                     let date = new Date(item.createdAt);
                     sentTime =
@@ -397,19 +434,18 @@ const Chatting = () => {
                     }
                     return (
                       <div key={index}>
-                        <div className={`user-chat ${messFrom}`}>
-                          <div className="avatar">
-                            <img
-                              src={require(`../../assests/image/avatar13.png`)}
-                            />
+                          <div className={`user-chat ${messFrom}`}>
+                            <div className="avatar" title={userSentMess} >
+                              <img
+                                src={require(`../../assests/image/avatar13.png`)}
+                              />
+                            </div>
+                            <p title={sentTime}>{item.content}</p>
                           </div>
-                          <p title={sentTime}>{item.content}</p>
-                        </div>
                       </div>
                     );
                   })
                 )}
-                <div ref={scrollToBottomRef}></div>
               </div>
               <div className="chat-bottom">
                 <AiFillCamera />
@@ -429,20 +465,23 @@ const Chatting = () => {
           )}
         </div>
       </div>
-      <div className="user-action" >
-     {displayUserAction === 'block' &&
-      <UserInfo 
-        setDisplayUserAction = {setDisplayUserAction}
-      />
-            }
+      <div className="user-action">
+        {displayUserAction === "block" && (
+          <UserInfo setDisplayUserAction={setDisplayUserAction} />
+        )}
       </div>
-      <div className="create-group" style={{display: `${displayCreateGroup}`}}>
-             {displayCreateGroup === 'block' && <CreateGroup 
-                setDisplayCreateGroup = {setDisplayCreateGroup}
-                token = {token}
-                createGroup = {createGroup}
-                userId = {userId}
-              />}
+      <div
+        className="create-group"
+        style={{ display: `${displayCreateGroup}` }}
+      >
+        {displayCreateGroup === "block" && (
+          <CreateGroup
+            setDisplayCreateGroup={setDisplayCreateGroup}
+            token={token}
+            createGroup={createGroup}
+            userId={userId}
+          />
+        )}
       </div>
     </div>
   );

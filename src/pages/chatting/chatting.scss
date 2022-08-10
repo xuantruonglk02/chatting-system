@@ -73,6 +73,7 @@
             .swiper-slide {
                 width: 60px;
                 height: 60px;
+                position: relative;
                  .users-active-item {
                     width: 100%;
                     height: 100%;
@@ -88,6 +89,14 @@
                         object-fit: cover;
                         border-radius: 50%;
                         overflow: hidden;
+                    }
+                    .active {
+                        position: absolute;
+                        bottom: -5px;
+                        right: -8px;
+                        font-size: 30px;
+                        color: #0ddd5d;
+                        padding: 0;
                     }
                 }}
         }

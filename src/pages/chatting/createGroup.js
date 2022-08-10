@@ -45,6 +45,7 @@ const CreateGroup = (props) => {
   const handleCreateGroup = async () => {
     if (!groupName) {
       alert("Tên group không được để trống!");
+      return
     }
     if (allowCreate === "disable") return;
     let userIds = [];
@@ -55,6 +56,7 @@ const CreateGroup = (props) => {
     let data = {
       title: groupName,
       userIds: userIds,
+      avatarUrl: 'avatar' + avatarIsPicked + '.png'
     };
     setAllowCreate("isLoading");
     setDisplayLoader("block");

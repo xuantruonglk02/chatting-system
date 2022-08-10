@@ -2,8 +2,10 @@ import { memo, useEffect, useRef, useState } from "react";
 import { BsPencil } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
+import {useNavigate} from 'react-router'
 import { ChangeUserNameApi, ChangePwApi, ChangeAvtApi } from "../../redux/apiRequest";
 import { BsCameraFill } from "react-icons/bs";
+import { userLogout } from "../../redux/slice/userSlice";
 
 const UserInfo = (props) => {
 
@@ -11,6 +13,7 @@ const UserInfo = (props) => {
     1, 2, 3, 4, 5, 6, 7, 8, 10, 39, 11, 22, 3, 5, 6,
   ]
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const mainRef = useRef();
 
@@ -67,7 +70,7 @@ const UserInfo = (props) => {
       newName: newUserName,
       password: pw,
     };
-    setErrMessChangeUsername("");
+    setErrMessChangeUsername('Loading....')
     let success = await ChangeUserNameApi(
       token,
       data,
@@ -89,7 +92,7 @@ const UserInfo = (props) => {
       setErrMessChangePw("Các mục trên k được để trống");
       return;
     }
-    setErrMessChangePw("");
+    setErrMessChangePw("Loading....");
     let data = {
       password: pw,
       newPassword: newPw,
@@ -125,7 +128,10 @@ const UserInfo = (props) => {
     let success = await ChangeAvtApi(token, data, dispatch)
     if(success === 1) setAvatarIsOpen('none')
   }
-
+  const handleLogout = () => {
+    dispatch(userLogout())
+    navigate('/')
+  }
   useEffect(() => {
     function handleClickOutside(event) {
       if (mainRef.current && !mainRef.current.contains(event.target)) {
@@ -178,7 +184,7 @@ const UserInfo = (props) => {
           </div>
 
           <div className="logout">
-            <p> Đăng xuất</p>
+            <p onClick={handleLogout}> Đăng xuất</p>
           </div>
         </div>
       )}

@@ -1,6 +1,12 @@
 import axios from "axios";
 
-import { userVeryfiMail, userLogin, userForgotPw, updateUsername, updateAvtUrl } from "./slice/userSlice";
+import {
+  userVeryfiMail,
+  userLogin,
+  userForgotPw,
+  updateUsername,
+  updateAvtUrl,
+} from "./slice/userSlice";
 
 const Axios = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -118,6 +124,7 @@ export const SendMesApi = async (accessToken, data) => {
         "x-access-token": accessToken,
       },
     });
+    return 1;
   } catch (err) {
     console.log(err);
   }
@@ -138,7 +145,7 @@ export const GetRecentMes = async (
         },
       }
     );
-    if (res.data.messages.length === 0 && data.begin != 0) {
+    if (res.data.messages.length === 0 && data.begin !== 0) {
       return false;
     }
     if (data.begin === 0) setMessagees([...res.data.messages]);
@@ -222,47 +229,84 @@ export const GetOnlineStatusUsers = async (accessToken) => {
   }
 };
 
-export const ChangeUserNameApi = async (accessToken, data, setErrMessChangeUsername, dispatch) => {
+export const ChangeUserNameApi = async (
+  accessToken,
+  data,
+  setErrMessChangeUsername,
+  dispatch
+) => {
   try {
-   await  Axios.post('/user/profile/change/name', data, {
+    await Axios.post("/user/profile/change/name", data, {
       headers: {
-        'x-access-token': accessToken
-      }
-    })
-    dispatch(updateUsername(data.newName))
-    return 1
-  } catch(err) {
-    console.log(err)
-    setErrMessChangeUsername(err.response?.data?.errorMessage)
+        "x-access-token": accessToken,
+      },
+    });
+    dispatch(updateUsername(data.newName));
+    return 1;
+  } catch (err) {
+    console.log(err);
+    setErrMessChangeUsername(err.response?.data?.errorMessage);
   }
-}
+};
 
 export const ChangePwApi = async (accessToken, data, setErrMessChangePw) => {
   try {
-    await Axios.post('/user/profile/change/password', data, {
+    await Axios.post("/user/profile/change/password", data, {
       headers: {
-        'x-access-token': accessToken
-      }
-    })
-    setErrMessChangePw('Đổi mật khẩu thành công')
-    return 1
-  } catch(err) {
-    console.log(err)
-    setErrMessChangePw(err.response?.data?.errorMessage)
+        "x-access-token": accessToken,
+      },
+    });
+    setErrMessChangePw("Đổi mật khẩu thành công");
+    return 1;
+  } catch (err) {
+    console.log(err);
+    setErrMessChangePw(err.response?.data?.errorMessage);
   }
-}
+};
 
 export const ChangeAvtApi = async (accessToken, data, dispatch) => {
   try {
-    await Axios.post('/user/profile/change/avatar', data, {
+    await Axios.post("/user/profile/change/avatar", data, {
       headers: {
-        'x-access-token': accessToken
-      }
-    })
-    dispatch(updateAvtUrl(data.newAvatarUrl))
-    return 1
-  } catch(err) {
-    console.log(err)
-    alert(err)
+        "x-access-token": accessToken,
+      },
+    });
+    dispatch(updateAvtUrl(data.newAvatarUrl));
+    return 1;
+  } catch (err) {
+    console.log(err);
+    alert(err);
   }
-}
+};
+
+export const GetConversationPtp = async (accessToken, targetUserId) => {
+  try {
+    let res = await Axios.get(
+      `/conversation/ptp?targetUserId=${targetUserId}`,
+      {
+        headers: {
+          "x-access-token": accessToken,
+        },
+      }
+    );
+    return res.data.conversation;
+  } catch (err) {
+    console.log(err);
+    alert(err);
+  }
+};
+
+export const GetUsersOnline = async (accessToken, setListUserOnline) => {
+  try {
+    debugger;
+    let res = await Axios.get("/user/online", {
+      headers: {
+        "x-access-token": accessToken,
+      },
+    });
+    setListUserOnline(res.data.users)
+  } catch (err) {
+    console.log(err);
+    alert(err);
+  }
+};

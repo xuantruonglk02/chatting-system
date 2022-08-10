@@ -10,7 +10,7 @@ const userSlice = createSlice({
         state.user = action.payload
     },
     userLogout: (state) => {
-
+      state.user = null
     },
     userVeryfiMail: (state, action) => {
          let user = {
@@ -32,7 +32,7 @@ const userSlice = createSlice({
     },
     updateAvtUrl: (state, action) => {
       state.user.avatarUrl = action.payload
-    }
+    },
   },
 });
 
