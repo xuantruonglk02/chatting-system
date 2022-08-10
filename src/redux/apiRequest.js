@@ -298,7 +298,7 @@ export const GetConversationPtp = async (accessToken, targetUserId) => {
 
 export const GetUsersOnline = async (accessToken, setListUserOnline) => {
   try {
-    debugger;
+    // debugger;
     let res = await Axios.get("/user/online", {
       headers: {
         "x-access-token": accessToken,
