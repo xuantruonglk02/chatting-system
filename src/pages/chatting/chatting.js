@@ -74,6 +74,10 @@ const Chatting = () => {
   const [displayCreateGroup, setDisplayCreateGroup] = useState("none");
   const [displayUserAction, setDisplayUserAction] = useState("none");
 
+  // 
+  const [executeGetUserOnline, setExecuteGetUserOnline] = useState(false)
+
+
   const handleOpenCreateGroup = () => {
     setDisplayCreateGroup("block");
   };
@@ -214,9 +218,14 @@ const Chatting = () => {
     return 1;
   };
 
-  setTimeout(() => {
-    GetUsersOnline(token, setListUserOnline)
-  }, 30000)
+ 
+  useEffect(() => {
+    setTimeout(() => {
+      debugger
+      GetUsersOnline(token, setListUserOnline)
+      setExecuteGetUserOnline(prev => prev ? false: true)
+    }, 30000)
+  }, [executeGetUserOnline])
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
