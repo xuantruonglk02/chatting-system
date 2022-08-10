@@ -42,6 +42,11 @@ const Chatting = () => {
   const userId = useSelector((state) => state.reducer.user.user?.userId);
   const avatarUrl = useSelector((state) => state.reducer.user.user?.avatarUrl);
 
+  // setup socket
+  socket.emit("user:connect", {
+    userId: userId,
+  });
+
   const [messagees, setMessagees] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [listUserOnline,  setListUserOnline] = useState([])
@@ -98,6 +103,7 @@ const Chatting = () => {
   };
 
   const handleShowChat = (item, other) => {
+    // console.log("redirect to show chat");
     setConversationIsPicked({
       ...item,
       nameOfChat: item.title || other.name,
@@ -174,11 +180,10 @@ const Chatting = () => {
       !isLoadFullDataInMess
     ) {
       if (!isScrolled.current) {
-        console.log("you are calling me");
-        console.log(beginNumGetConver);
+        // console.log("you are calling me");
         isScrolled.current = true;
         setTimeout(async () => {
-          console.log("you are calling me");
+          // console.log("you are calling me");
           let data = {
             conversationId: conversationIsPicked._id,
             begin: beginNumGetMess + LIMIT_MESS,
@@ -219,11 +224,6 @@ const Chatting = () => {
     });
   }, []);
   useEffect(() => {
-    socket.on("connect", () => {
-      socket.emit("user:connect", {
-        userId: userId,
-      });
-    });
     GetRecentConversations(
       token,
       beginNumGetConver,
@@ -265,6 +265,11 @@ const Chatting = () => {
               value={keySearch}
               onFocus={(e) => {
                 setOnFocusSearch(true);
+              }}
+              onBlur={(e) => {
+                setOnFocusSearch(false);
+                setKeySearch("");
+                setResultSearched([])
               }}
               onChange={(e) => onKeySearchChange(e)}
             />
@@ -309,6 +314,10 @@ const Chatting = () => {
                         }
                       }
                     }
+                    const userSendMessageIndex = item.userIds.findIndex(user => user._id === item.lastMessage?.from._id);
+                    const userSendMessage = userSendMessageIndex === -1
+                      ? null
+                      : item.userIds?.[userSendMessageIndex];
                     return (
                       <div
                         key={index}
@@ -333,7 +342,7 @@ const Chatting = () => {
                               overflow: " hidden",
                             }}
                           >
-                            {item.lastMessage?.content}
+                            {`${userSendMessage._id === userId ? 'Bạn' : userSendMessage.name}: ${item.lastMessage?.content}`}
                           </p>
                         </div>
                       </div>
@@ -434,14 +443,14 @@ const Chatting = () => {
                     }
                     return (
                       <div key={index}>
-                          <div className={`user-chat ${messFrom}`}>
-                            <div className="avatar" title={userSentMess} >
-                              <img
-                                src={require(`../../assests/image/avatar13.png`)}
-                              />
-                            </div>
-                            <p title={sentTime}>{item.content}</p>
+                        <div className={`user-chat ${messFrom}`}>
+                          <div className="avatar">
+                            <img
+                              src={require(`../../assests/image/avatar13.png`)}
+                            />
                           </div>
+                          <p title={sentTime}>{item.content}</p>
+                        </div>
                       </div>
                     );
                   })

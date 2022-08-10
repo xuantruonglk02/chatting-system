@@ -176,7 +176,7 @@ export const GetRecentConversations = async (
     if (res.data.conversations.length === 0) {
       return false;
     }
-    console.log(res.data.conversations);
+    // console.log(res.data.conversations);
     if (begin === 0) setConversations([...res.data.conversations]);
     else setConversations((prev) => [...prev, ...res.data.conversations]);
   } catch (err) {
