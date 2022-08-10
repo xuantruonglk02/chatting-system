@@ -150,6 +150,7 @@ const Chatting = () => {
         limit: LIMIT_MESS
       }
        GetRecentMes(token, data, setMessagees) 
+       
       }
        else  setMessagees([])
        setBeginNumGetMess(0)
@@ -213,6 +214,9 @@ const Chatting = () => {
     return 1;
   };
 
+  setTimeout(() => {
+    GetUsersOnline(token, setListUserOnline)
+  }, 30000)
   useEffect(() => {
     socket.on("server:message", (data) => {
       if (data) {
@@ -229,14 +233,17 @@ const Chatting = () => {
       setConversations
     );
     GetUsersOnline(token, setListUserOnline)
-    // GetOnlineStatusUsers(token)
   }, [userId]);
   useEffect(() => {
     if (getNewMessage) {
       GetRecentConversations(token, 0, LIMIT_CONVER, setConversations);
 
       if (getNewMessage.to !== conversationIsPicked?._id) {
-        return;
+        let _converIsPicked = {
+          ...conversationIsPicked,
+          _id: getNewMessage.to
+        }
+        setConversationIsPicked(_converIsPicked)
       }
       setMessagees([getNewMessage, ...messagees]);
       setGetNewMessage("");
@@ -267,11 +274,6 @@ const Chatting = () => {
               value={keySearch}
               onFocus={(e) => {
                 setOnFocusSearch(true);
-              }}
-              onBlur={(e) => {
-                setOnFocusSearch(false);
-                setKeySearch("");
-                setResultSearched([])
               }}
               onChange={(e) => onKeySearchChange(e)}
             />
@@ -344,7 +346,7 @@ const Chatting = () => {
                               overflow: " hidden",
                             }}
                           >
-                            {`${userSendMessage?._id === userId ? 'Bạn' : userSendMessage?.name}: ${item.lastMessage?.content}`}
+                           {item.lastMessage && `${userSendMessage?._id === userId ? 'Bạn' : userSendMessage?.name}: ${item.lastMessage?.content}`}
                           </p>
                         </div>
                       </div>

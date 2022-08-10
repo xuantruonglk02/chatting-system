@@ -17,8 +17,8 @@ const SearchByKey = (props) => {
     };
     let conversation = await GetConversationPtp(token, item._id)
       debugger
-    data.hasConversation = conversation ? true : false
     if(conversation) data._id = conversation._id
+    data.hasConversation = true
     handleShowChatFromSearchBox(data);
     setOnFocusSearch(false)
     setResultSearched([])
