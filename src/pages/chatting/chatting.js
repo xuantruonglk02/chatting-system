@@ -342,7 +342,7 @@ const Chatting = () => {
                               overflow: " hidden",
                             }}
                           >
-                            {`${userSendMessage._id === userId ? 'Bạn' : userSendMessage.name}: ${item.lastMessage?.content}`}
+                            {`${userSendMessage?._id === userId ? 'Bạn' : userSendMessage?.name}: ${item.lastMessage?.content}`}
                           </p>
                         </div>
                       </div>
