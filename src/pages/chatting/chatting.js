@@ -122,7 +122,7 @@ const Chatting = () => {
   const handleShowChatFromUserActive = async (item) => {
     setConversationIsPicked({
       ...item,
-      nameOfChat: item.title,
+      nameOfChat: item.name,
       status: 'online'
     });
     debugger
@@ -329,7 +329,7 @@ const Chatting = () => {
                             <img
                               src={require(`../../assests/image/${item.avatarUrl}`)}
                             />
-                            <GoPrimitiveDot className="active" />
+                            {other?.status === 'online' && <GoPrimitiveDot className="active" /> }
                         </div>
                         <div className="info col-9">
                           <h5>{item.title || other.name}</h5>
@@ -444,7 +444,7 @@ const Chatting = () => {
                     return (
                       <div key={index}>
                         <div className={`user-chat ${messFrom}`}>
-                          <div className="avatar">
+                          <div className="avatar" title={userSentMess}>
                             <img
                               src={require(`../../assests/image/avatar13.png`)}
                             />
